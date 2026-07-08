@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Comparador de Salário PT</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <aside class="panel controls-panel" aria-label="Configuração da proposta">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Portugal</p>
+              <h1>Comparador salarial</h1>
+            </div>
+            <div id="winner-summary" class="winner-summary"></div>
+          </div>
+
+          <p class="privacy-note">
+            Os valores introduzidos são calculados apenas neste navegador. A aplicação não guarda dados, não usa cookies e não envia informação para servidores.
+          </p>
+
+          <div class="toolbar">
+            <label>
+              Proposta
+              <select id="proposal-select"></select>
+            </label>
+            <button id="add-proposal" type="button">Adicionar</button>
+            <button id="remove-proposal" type="button" class="secondary">Remover</button>
+          </div>
+
+          <form id="proposal-form" class="form-grid">
+            <label>
+              Nome
+              <input name="name" type="text" autocomplete="off">
+            </label>
+            <label>
+              Salário base mensal
+              <input name="baseSalary" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Meses de salário
+              <input name="salaryMonths" type="number" min="1" max="14" step="1">
+            </label>
+            <label>
+              Bónus anual (%)
+              <input name="bonusRate" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Bónus anual fixo
+              <input name="bonusAmount" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Outros benefícios mensais
+              <input name="monthlyBenefits" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Car allowance mensal
+              <input name="monthlyCarAllowance" type="number" min="0" step="0.01">
+            </label>
+            <label class="toggle-row inline-toggle">
+              <input name="carAllowanceSubjectToSS" type="checkbox">
+              Car allowance sujeito a SS
+            </label>
+            <label>
+              Teletrabalho mensal
+              <input name="remoteAllowance" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Subsídio refeição diário
+              <input name="mealAllowanceDaily" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Fuel card anual
+              <input name="fuelCardAnnual" type="number" min="0" step="0.01">
+            </label>
+            <label>
+              Seguro de saúde anual
+              <input name="healthInsuranceAnnual" type="number" min="0" step="0.01">
+            </label>
+          </form>
+
+          <div class="settings-grid" aria-label="Premissas fiscais">
+            <label class="toggle-row">
+              <input id="rnh-enabled" type="checkbox">
+              Limitar IRS por RNH
+            </label>
+            <label>
+              Limite RNH (%)
+              <input id="rnh-limit" type="number" min="0" max="100" step="0.01">
+            </label>
+            <label>
+              Segurança Social (%)
+              <input id="ss-rate" type="number" min="0" max="100" step="0.01">
+            </label>
+          </div>
+        </aside>
+
+        <section class="results-area" aria-label="Resultados">
+          <div id="comparison-cards" class="cards-grid"></div>
+
+          <section class="panel table-panel">
+            <h2>Comparação detalhada</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Proposta</th>
+                    <th>Base tributável mensal</th>
+                    <th>IRS</th>
+                    <th>Bruto anual</th>
+                    <th>IRS anual</th>
+                    <th>SS anual</th>
+                    <th>Líquido anual</th>
+                  </tr>
+                </thead>
+                <tbody id="details-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
