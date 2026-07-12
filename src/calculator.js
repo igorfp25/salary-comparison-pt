@@ -1,4 +1,4 @@
-import { irsPt2024 } from "./data/irs-pt-2024.js";
+import { irsPt } from "./data/irs-pt-brackets.js";
 
 const money = new Intl.NumberFormat("pt-PT", {
   style: "currency",
@@ -25,7 +25,7 @@ export function roundCurrency(value) {
 
 export function calculateProposal(input, config = {}) {
   const settings = {
-    irsTable: irsPt2024,
+    irsTable: irsPt,
     socialSecurityRate: 0.11,
     rnhEnabled: true,
     rnhLimit: 0.2,

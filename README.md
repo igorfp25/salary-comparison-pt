@@ -1,6 +1,6 @@
 # Comparador de Salário PT
 
-Aplicação estática para comparar propostas de remuneração para trabalhador subordinado em Portugal, inspirada no modelo atual em Excel.
+Aplicação estática para comparar propostas de remuneração para trabalhador subordinado em Portugal.
 
 ## Como usar localmente
 

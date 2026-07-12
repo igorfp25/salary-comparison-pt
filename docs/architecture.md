@@ -57,7 +57,7 @@ Responsabilidades:
 
 ### Dados
 
-`src/data/irs-pt-2024.js`.
+`src/data/irs-pt-brackets.js`.
 
 Responsabilidades:
 
@@ -65,19 +65,7 @@ Responsabilidades:
 - permitir atualização anual sem tocar na interface;
 - preservar metadados de origem/ano.
 
-## Regras migradas do Excel
 
-O Excel contém quatro abas: `Brazil`, `Portugal`, `Portugal (2)` e `IRS table PT`. Para o MVP, a app foca no modelo português mais recente da aba `Portugal (2)`.
-
-Regras principais:
-
-- salário base normalmente pago 14 vezes;
-- outros benefícios pagos 12 vezes;
-- subsídio de refeição não tributável até ao limite diário configurado;
-- parcela tributável do subsídio de refeição sujeita a IRS e Segurança Social;
-- Segurança Social configurada por omissão em 11%;
-- IRS calculado pela tabela de retenção mensal;
-- opção de limitar IRS por RNH.
 
 ## Evolução recomendada
 
