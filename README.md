@@ -19,8 +19,11 @@ Este repositório foi pensado para GitHub Pages:
 - `index.html`: tela principal.
 - `styles.css`: estilos responsivos.
 - `src/app.js`: estado, eventos e renderização.
+- `src/domain/proposal.js`: modelos reutilizáveis de propostas, rendimentos e descontos.
+- `src/ui/input-card.js`: apresentação modular do cartão de inputs.
+- `src/i18n/pt.js`: textos do cartão em português, preparados para futuras traduções.
 - `src/calculator.js`: regras de cálculo reutilizáveis.
-- `src/data/irs-pt-2024.js`: tabela de retenção IRS usada no Excel original.
+- `src/data/irs-pt-brackets.js`: tabela de IRS usada na simulação.
 - `docs/architecture.md`: arquitetura proposta e evolução do produto.
 - `docs/privacy.md`: política técnica de privacidade e não persistência.
 
