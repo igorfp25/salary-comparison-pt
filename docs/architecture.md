@@ -32,18 +32,19 @@ Qualquer funcionalidade futura de partilha, exportação em nuvem, analytics ou 
 
 ### Interface
 
-`index.html`, `styles.css` e `src/app.js`.
+`index.html`, `styles.css`, `src/app.js` e `src/ui/input-card.js`.
 
 Responsabilidades:
 
 - capturar inputs;
+- apresentar os campos obrigatórios e linhas dinâmicas de rendimentos/descontos;
 - permitir comparar múltiplas propostas;
 - mostrar cartões de resumo e tabela detalhada;
 - exportar ou partilhar cenários em iterações futuras.
 
 ### Domínio
 
-`src/calculator.js`.
+`src/calculator.js` e `src/domain/proposal.js`.
 
 Responsabilidades:
 
@@ -54,6 +55,18 @@ Responsabilidades:
 - calcular Segurança Social;
 - calcular subsídios, bónus e benefícios;
 - devolver resultado estruturado e testável.
+
+`src/domain/proposal.js` contém os modelos por defeito e as fábricas de propostas,
+rendimentos e descontos. A interface não precisa conhecer as regras de cada tipo
+de rendimento.
+
+### Texto da interface
+
+`src/i18n/pt.js`.
+
+Os textos introduzidos no cartão de inputs são agrupados por contexto e em
+português. Uma futura tradução pode repetir a mesma estrutura (`en.js`, por
+exemplo) e ser selecionada na camada de interface, sem alterar os cálculos.
 
 ### Dados
 
@@ -74,3 +87,5 @@ Responsabilidades:
 3. Adicionar testes automatizados para o motor de cálculo.
 4. Adicionar exportação CSV/PDF.
 5. Adicionar modo "comparar proposta atual vs nova proposta".
+6. Validar com um contabilista o tratamento fiscal de cada tipo de rendimento e
+   introduzir regras específicas, quando necessário.
