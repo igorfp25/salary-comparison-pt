@@ -32,14 +32,15 @@ Qualquer funcionalidade futura de partilha, exportação em nuvem, analytics ou 
 
 ### Interface
 
-`index.html`, `styles.css`, `src/app.js` e `src/ui/input-card.js`.
+`index.html`, `styles.css`, `src/app.js`, `src/ui/input-card.js` e
+`src/ui/output-cards.js`.
 
 Responsabilidades:
 
 - capturar inputs;
 - apresentar os campos obrigatórios e linhas dinâmicas de rendimentos/descontos;
 - permitir comparar múltiplas propostas;
-- mostrar cartões de resumo e tabela detalhada;
+- mostrar cartões de resumo e uma tabela detalhada por rubrica;
 - exportar ou partilhar cenários em iterações futuras.
 
 ### Domínio
@@ -64,9 +65,10 @@ de rendimento.
 
 `src/i18n/pt.js`.
 
-Os textos introduzidos no cartão de inputs são agrupados por contexto e em
-português. Uma futura tradução pode repetir a mesma estrutura (`en.js`, por
-exemplo) e ser selecionada na camada de interface, sem alterar os cálculos.
+Os textos introduzidos nos cartões de input e de output são agrupados por
+contexto e em português. Uma futura tradução pode repetir a mesma estrutura
+(`en.js`, por exemplo) e ser selecionada na camada de interface, sem alterar
+os cálculos.
 
 ### Dados
 

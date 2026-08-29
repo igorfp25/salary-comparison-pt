@@ -1,6 +1,7 @@
-import { calculateProposal, formatMoney, formatPercent } from "./calculator.js";
+import { calculateProposal } from "./calculator.js";
 import { cloneProposal, createDeductionItem, createIncomeItem, createProposal } from "./domain/proposal.js";
 import { renderInputCard } from "./ui/input-card.js";
+import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
 
 const currentProposal = { ...createProposal("Atual"), baseSalary: 1500 };
 const newProposal = { ...createProposal("Nova oferta"), baseSalary: 2000 };
@@ -15,9 +16,8 @@ const state = {
 
 const form = document.querySelector("#proposal-form");
 const proposalSelect = document.querySelector("#proposal-select");
-const comparisonCards = document.querySelector("#comparison-cards");
-const detailsBody = document.querySelector("#details-body");
-const winnerSummary = document.querySelector("#winner-summary");
+const summaryResults = document.querySelector("#summary-results");
+const detailedResults = document.querySelector("#detailed-results");
 const rnhToggle = document.querySelector("#rnh-enabled");
 const rnhLimit = document.querySelector("#rnh-limit");
 const ssRate = document.querySelector("#ss-rate");
@@ -158,43 +158,8 @@ function renderResults() {
     rnhLimit: state.rnhLimit,
     socialSecurityRate: state.socialSecurityRate,
   }));
-  const best = [...results].sort((a, b) => b.annualNet - a.annualNet)[0];
-
-  winnerSummary.innerHTML = `
-    <span>Melhor líquido anual</span>
-    <strong>${escapeHtml(best.name)} · ${formatMoney(best.annualNet)}</strong>
-  `;
-
-  comparisonCards.innerHTML = results
-    .map((result) => `
-      <article class="proposal-card ${result.id === best.id ? "is-best" : ""}">
-        <div>
-          <h3>${escapeHtml(result.name)}</h3>
-          <p>IRS aplicado: ${formatPercent(result.irsRate)}</p>
-        </div>
-        <dl>
-          <div><dt>Líquido anual</dt><dd>${formatMoney(result.annualNet)}</dd></div>
-          <div><dt>Média mensal líquida</dt><dd>${formatMoney(result.averageMonthlyNet)}</dd></div>
-          <div><dt>Bruto anual</dt><dd>${formatMoney(result.annualGross)}</dd></div>
-          <div><dt>Impostos + SS</dt><dd>${formatMoney(result.annualTaxes + result.annualSocialSecurity)}</dd></div>
-        </dl>
-      </article>
-    `)
-    .join("");
-
-  detailsBody.innerHTML = results
-    .map((result) => `
-      <tr>
-        <td>${escapeHtml(result.name)}</td>
-        <td>${formatMoney(result.monthlyDeductible)}</td>
-        <td>${formatPercent(result.irsRate)}</td>
-        <td>${formatMoney(result.annualGross)}</td>
-        <td>${formatMoney(result.annualTaxes)}</td>
-        <td>${formatMoney(result.annualSocialSecurity)}</td>
-        <td>${formatMoney(result.annualNet)}</td>
-      </tr>
-    `)
-    .join("");
+  renderSummaryResults(summaryResults, results);
+  renderDetailedResults(detailedResults, results);
 }
 
 function escapeHtml(value) {
