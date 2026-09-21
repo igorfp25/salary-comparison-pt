@@ -17,6 +17,8 @@ Este projeto foi desenhado para poder ser publicado como repositório público e
 
 Os valores introduzidos no formulário ficam apenas em memória, no estado JavaScript da página aberta no navegador. Ao recarregar ou fechar o separador, esses valores desaparecem.
 
+O utilizador pode, por iniciativa própria, exportar todas as simulações visíveis para um ficheiro JSON descarregado pelo navegador. Esse ficheiro pode conter dados salariais sensíveis; a aplicação mostra este aviso antes de o criar e não recebe nem guarda uma cópia. A exportação também pode ser protegida com uma palavra-passe, que nunca é guardada pela aplicação.
+
 ## O que fica público
 
 Num repositório público, ficam públicos:

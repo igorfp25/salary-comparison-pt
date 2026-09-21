@@ -32,6 +32,8 @@ Este repositório foi pensado para GitHub Pages:
 A aplicação não usa backend, contas, cookies, analytics, `localStorage` ou `sessionStorage`.
 Os valores digitados ficam apenas no estado temporário da página, em memória, e desaparecem ao recarregar ou fechar o separador.
 
+Pode guardar todas as propostas visíveis num ficheiro JSON local. A aplicação mostra um aviso de dados sensíveis antes da exportação e pode proteger o ficheiro com uma palavra-passe que não é guardada.
+
 ## Nota fiscal
 
 Os cálculos são uma simulação baseada nas premissas configuradas e na tabela de IRS versionada no projeto. Para uso público, valide as regras e tabelas oficiais vigentes antes de publicar.

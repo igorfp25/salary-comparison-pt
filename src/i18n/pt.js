@@ -1,4 +1,20 @@
 export const pt = {
+  exportSimulation: {
+    button: "Guardar simulação",
+    title: "Exportar simulação",
+    sensitiveDataHeading: "Atenção:",
+    sensitiveDataWarning: "o ficheiro pode conter valores salariais, benefícios e outros dados sensíveis. Guarde-o num local seguro e só o partilhe com pessoas de confiança.",
+    privacyNote: "A exportação é criada neste navegador e descarregada diretamente para o seu dispositivo. Nenhum dado é enviado ou guardado pela aplicação.",
+    passwordProtection: "Proteger o ficheiro com palavra-passe",
+    password: "Palavra-passe",
+    passwordConfirmation: "Confirmar palavra-passe",
+    passwordNote: "A palavra-passe não é guardada. Se a perder, não será possível abrir o ficheiro.",
+    passwordMismatch: "As palavras-passe não coincidem.",
+    passwordMinimum: "A palavra-passe deve ter pelo menos 12 caracteres.",
+    cancel: "Cancelar",
+    download: "Descarregar JSON",
+    unknownError: "Não foi possível exportar a simulação.",
+  },
   proposal: {
     name: "Nome da proposta",
     baseSalary: "Salário base mensal",

@@ -41,7 +41,7 @@ Responsabilidades:
 - apresentar os campos obrigatórios e linhas dinâmicas de rendimentos/descontos;
 - permitir comparar múltiplas propostas;
 - mostrar cartões de resumo e uma tabela detalhada por rubrica;
-- exportar ou partilhar cenários em iterações futuras.
+- exportar todos os cenários para ficheiros JSON criados localmente no navegador, com proteção opcional por palavra-passe.
 
 ### Domínio
 
@@ -87,7 +87,7 @@ Responsabilidades:
 1. Validar os cálculos contra 3 a 5 cenários do Excel.
 2. Atualizar tabelas de IRS para o ano vigente com fonte oficial.
 3. Adicionar testes automatizados para o motor de cálculo.
-4. Adicionar exportação CSV/PDF.
+4. Adicionar importação de simulações JSON e exportação CSV/PDF.
 5. Adicionar modo "comparar proposta atual vs nova proposta".
 6. Validar com um contabilista o tratamento fiscal de cada tipo de rendimento e
    introduzir regras específicas, quando necessário.

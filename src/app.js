@@ -1,5 +1,7 @@
 import { calculateProposal } from "./calculator.js";
 import { cloneProposal, createDeductionItem, createIncomeItem, createProposal } from "./domain/proposal.js";
+import { initialiseSimulationExport } from "./features/export-simulation.js";
+import { pt } from "./i18n/pt.js";
 import { renderInputCard } from "./ui/input-card.js";
 import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
 
@@ -21,6 +23,15 @@ const detailedResults = document.querySelector("#detailed-results");
 const rnhToggle = document.querySelector("#rnh-enabled");
 const rnhLimit = document.querySelector("#rnh-limit");
 const ssRate = document.querySelector("#ss-rate");
+
+const saveSimulationButton = document.querySelector("#open-export");
+saveSimulationButton.textContent = pt.exportSimulation.button;
+initialiseSimulationExport({
+  state,
+  openButton: saveSimulationButton,
+  dialog: document.querySelector("#export-dialog"),
+  copy: pt.exportSimulation,
+});
 
 document.querySelector("#add-proposal").addEventListener("click", () => {
   const proposal = cloneProposal(selectedProposal(), `Proposta ${state.proposals.length + 1}`);

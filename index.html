@@ -8,6 +8,9 @@
   </head>
   <body>
     <main class="app-shell">
+      <div class="app-actions">
+        <button id="open-export" type="button" class="secondary"></button>
+      </div>
       <section class="workspace">
         <aside class="panel controls-panel" aria-label="Configuração da proposta">
           <div class="panel-header">
@@ -54,6 +57,8 @@
         </section>
       </section>
     </main>
+
+    <dialog id="export-dialog" aria-labelledby="export-dialog-title"></dialog>
     <script type="module" src="src/app.js"></script>
   </body>
 </html>
