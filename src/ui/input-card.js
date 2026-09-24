@@ -1,12 +1,14 @@
 import { INCOME_TYPES } from "../domain/proposal.js";
 import { pt } from "../i18n/pt.js";
 
+// Creates consistently configured numeric inputs for the dynamic proposal form.
 const numberInput = (name, value, options = {}) => `
   <input name="${name}" type="number" min="${options.min ?? 0}" ${options.max ? `max="${options.max}"` : ""} step="${options.step ?? "0.01"}" value="${value}">
 `;
 
 const field = (label, input) => `<label>${label}${input}</label>`;
 
+// Escapes user-entered labels before interpolating them into generated HTML.
 const escapeHtml = (value) => String(value)
   .replaceAll("&", "&amp;")
   .replaceAll("<", "&lt;")
@@ -15,6 +17,7 @@ const escapeHtml = (value) => String(value)
   .replaceAll("'", "&#039;");
 
 export function renderInputCard(form, proposal) {
+  // Re-rendering from state keeps the dynamic rows and their values in sync after every change.
   form.innerHTML = `
     <section class="input-section">
       <div class="section-heading"><h2>${pt.sections.mandatory}</h2><span>Por proposta</span></div>
@@ -41,6 +44,7 @@ export function renderInputCard(form, proposal) {
   `;
 }
 
+// Renders one additional-income row and its applicable calculation controls.
 function renderIncomeItem(item) {
   const calculationFields = incomeCalculationFields(item);
 
@@ -63,6 +67,7 @@ function renderIncomeItem(item) {
   `;
 }
 
+// Shows only the fields needed by the selected income calculation mode.
 function incomeCalculationFields(item) {
   if (item.calculationMode === "baseSalaryPercentage") {
     return field(pt.income.annualRate, numberInput("amount", item.amount));
@@ -76,6 +81,7 @@ function incomeCalculationFields(item) {
   return field(pt.income.amount, numberInput("amount", item.amount));
 }
 
+// Renders one deduction row, including the extra fields required for family insurance.
 function renderDeductionItem(item) {
   const isFamily = item.calculationMode === "healthInsuranceFamily";
   const amountField = item.calculationMode === "baseSalaryPercentage"
@@ -99,6 +105,7 @@ function renderDeductionItem(item) {
   `;
 }
 
+// Builds a select control while retaining the item's currently selected value.
 function select(name, currentValue, options) {
   return `<select name="${name}">${options.map(([value, label]) => `<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`).join("")}</select>`;
 }

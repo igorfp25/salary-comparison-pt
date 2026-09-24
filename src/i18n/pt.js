@@ -1,3 +1,4 @@
+// Portuguese UI copy is grouped by feature to make future locale modules structurally compatible.
 export const pt = {
   exportSimulation: {
     button: "Guardar simulação",

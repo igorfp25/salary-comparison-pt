@@ -1,3 +1,4 @@
+// Lists the income types supported by the proposal editor.
 export const INCOME_TYPES = [
   "annualBonus",
   "carAllowance",
@@ -6,6 +7,7 @@ export const INCOME_TYPES = [
   "otherPayment",
 ];
 
+// Provides domain defaults whenever the user creates or changes an income type.
 const incomeDefaults = {
   annualBonus: { calculationMode: "baseSalaryPercentage", payments: 1, subjectToIrs: true, subjectToSs: true },
   carAllowance: { calculationMode: "fixed", payments: 12, subjectToIrs: true, subjectToSs: false },
@@ -15,6 +17,7 @@ const incomeDefaults = {
 };
 
 export function createProposal(name = "Nova proposta") {
+  // IDs are generated locally so proposals can be selected and cloned without persistence.
   return {
     id: crypto.randomUUID(),
     name,
@@ -53,6 +56,7 @@ export function createDeductionItem() {
 }
 
 export function cloneProposal(proposal, name) {
+  // Nested items receive new IDs to avoid collisions with the source proposal in the UI.
   return {
     ...proposal,
     id: crypto.randomUUID(),

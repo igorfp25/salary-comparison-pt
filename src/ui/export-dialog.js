@@ -1,3 +1,4 @@
+// Renders and manages the export dialog while keeping its copy injectable for future locales.
 export function createExportDialog(dialog, copy) {
   dialog.innerHTML = `
     <form id="export-form" method="dialog">
@@ -36,6 +37,7 @@ export function createExportDialog(dialog, copy) {
   const passwordConfirmation = dialog.querySelector("#export-password-confirmation");
   const error = dialog.querySelector("#export-error");
 
+  // Clears transient password and validation state before each dialog session.
   function reset() {
     form.reset();
     passwordFields.hidden = true;
@@ -74,6 +76,7 @@ export function createExportDialog(dialog, copy) {
             passwordConfirmation: passwordConfirmation.value,
           });
         } catch (submissionError) {
+          // Surface expected validation or encryption failures without closing the dialog.
           error.textContent = submissionError instanceof Error ? submissionError.message : copy.unknownError;
           error.hidden = false;
         }

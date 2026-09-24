@@ -5,9 +5,11 @@ import { pt } from "./i18n/pt.js";
 import { renderInputCard } from "./ui/input-card.js";
 import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
 
+// Initialise the two comparison examples shown when the application first loads.
 const currentProposal = { ...createProposal("Atual"), baseSalary: 1500 };
 const newProposal = { ...createProposal("Nova oferta"), baseSalary: 2000 };
 
+// The complete application state remains in memory and is never persisted automatically.
 const state = {
   rnhEnabled: true,
   rnhLimit: 0.2,
@@ -24,6 +26,7 @@ const rnhToggle = document.querySelector("#rnh-enabled");
 const rnhLimit = document.querySelector("#rnh-limit");
 const ssRate = document.querySelector("#ss-rate");
 
+// The export feature receives its copy and current state as dependencies.
 const saveSimulationButton = document.querySelector("#open-export");
 saveSimulationButton.textContent = pt.exportSimulation.button;
 initialiseSimulationExport({
@@ -34,6 +37,7 @@ initialiseSimulationExport({
 });
 
 document.querySelector("#add-proposal").addEventListener("click", () => {
+  // Cloning preserves the current proposal's inputs while assigning independent identifiers.
   const proposal = cloneProposal(selectedProposal(), `Proposta ${state.proposals.length + 1}`);
   state.proposals.push(proposal);
   state.selectedProposalId = proposal.id;
@@ -66,6 +70,7 @@ form.addEventListener("change", (event) => {
 
   const row = target.closest("[data-kind]");
   if (!row) return;
+  // Changing the income type resets its type-specific defaults but keeps its identity and label.
   if (row.dataset.kind === "income" && target.name === "type") {
     replaceIncomeType(row.dataset.id, target.value);
   } else {
@@ -120,6 +125,7 @@ function selectedProposal() {
   return state.proposals.find((proposal) => proposal.id === state.selectedProposalId);
 }
 
+// Updates either a proposal field or a nested income/deduction item from a delegated form event.
 function updateProposalField(target) {
   const proposal = selectedProposal();
   const row = target.closest("[data-kind]");
@@ -135,6 +141,7 @@ function updateProposalField(target) {
   if (item) item[target.name] = value;
 }
 
+// Replaces type-specific defaults without breaking the existing row's DOM identity.
 function replaceIncomeType(itemId, type) {
   const proposal = selectedProposal();
   const index = proposal.incomeItems.findIndex((item) => item.id === itemId);
@@ -143,6 +150,7 @@ function replaceIncomeType(itemId, type) {
   proposal.incomeItems[index] = { ...createIncomeItem(type), id: current.id, label: current.label };
 }
 
+// Keeps all UI regions derived from the same in-memory state.
 function render() {
   renderSelect();
   renderForm();
@@ -173,6 +181,7 @@ function renderResults() {
   renderDetailedResults(detailedResults, results);
 }
 
+// Escapes proposal names before rendering select options with innerHTML.
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")

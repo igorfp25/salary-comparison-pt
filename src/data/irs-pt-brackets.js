@@ -1,7 +1,9 @@
+// Defines the versioned IRS withholding data consumed by the calculation engine.
 /* Formula to apply: Compensation x Rate - abatements - Additional abatments x number of dependents.
 Fórmula a aplicar: Remuneração x Taxa - Parcela a abater - Parcela adicional a abater x nº dependentes.
  */
 
+// Keep tax-year metadata alongside brackets so future updates remain traceable.
 export const irsPt = {
   year: 2026,
   category: "A",

@@ -1,7 +1,10 @@
+// Identifies the portable file format independently from the application version.
 const FORMAT = "salary-comparison-pt";
 const VERSION = 1;
+// A deliberately expensive derivation protects password-based exports against guessing attacks.
 const PBKDF2_ITERATIONS = 600000;
 
+// Creates a versioned snapshot containing every proposal and the shared calculation settings.
 export function createSimulationExport(state) {
   return {
     format: FORMAT,
@@ -17,13 +20,16 @@ export function createSimulationExport(state) {
   };
 }
 
+// Encrypts a snapshot locally with AES-GCM; the password is never written to the export.
 export async function createEncryptedSimulationExport(simulationExport, password) {
   if (!crypto.subtle) {
     throw new Error("A encriptação não é suportada neste navegador.");
   }
 
+  // Fresh random values ensure that repeated exports with the same password have different ciphertexts.
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
+  // PBKDF2 derives a non-exportable encryption key from the user-provided password.
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(password),
@@ -49,6 +55,7 @@ export async function createEncryptedSimulationExport(simulationExport, password
     new TextEncoder().encode(JSON.stringify(simulationExport)),
   );
 
+  // Store only the parameters required for a future local decryption operation.
   return {
     format: `${FORMAT}-encrypted`,
     version: VERSION,
@@ -64,6 +71,7 @@ export async function createEncryptedSimulationExport(simulationExport, password
   };
 }
 
+// Triggers a browser download without uploading or persisting the exported content.
 export function downloadJson(data, filename) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -74,9 +82,11 @@ export function downloadJson(data, filename) {
   document.body.append(link);
   link.click();
   link.remove();
+  // Defer revocation until the browser has started consuming the temporary object URL.
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
+// Converts binary encryption values to JSON-safe Base64 strings.
 function bytesToBase64(bytes) {
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
