@@ -23,7 +23,7 @@ export function createSimulationExport(state) {
 // Encrypts a snapshot locally with AES-GCM; the password is never written to the export.
 export async function createEncryptedSimulationExport(simulationExport, password) {
   if (!crypto.subtle) {
-    throw new Error("A encriptação não é suportada neste navegador.");
+    throw new Error("Encryption not supported for this browser.");
   }
 
   // Fresh random values ensure that repeated exports with the same password have different ciphertexts.

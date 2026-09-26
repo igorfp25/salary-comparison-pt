@@ -1,3 +1,5 @@
+import { mealAllowance } from "../data/mealAllowance-pt.js";
+
 // Lists the income types supported by the proposal editor.
 export const INCOME_TYPES = [
   "annualBonus",
@@ -25,7 +27,7 @@ export function createProposal(name = "Nova proposta") {
     salaryMonths: 14,
     mealAllowanceDaily: 0,
     mealAllowanceMonths: 11,
-    mealTaxFreeDailyLimit: 10.46,
+    mealTaxFreeDailyLimit: mealAllowance.taxFreeCardLimit,
     incomeItems: [],
     deductionItems: [],
   };

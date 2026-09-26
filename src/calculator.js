@@ -1,4 +1,5 @@
 import { irsPt } from "./data/irs-pt-brackets.js";
+import { mealAllowance } from "./data/mealAllowance-pt.js";
 
 // Locale-aware formatters keep presentation formatting out of the UI modules.
 const money = new Intl.NumberFormat("pt-PT", {
@@ -34,7 +35,7 @@ export function calculateProposal(input, config = {}) {
     rnhEnabled: true,
     rnhLimit: 0.2,
     workingDaysPerMonth: 22,
-    mealAllowanceTaxFreeDailyLimit: 10.46,
+    mealAllowanceTaxFreeDailyLimit: mealAllowance.taxFreeCardLimit,
     ...config,
   };
   const salaryMonths = number(input.salaryMonths, 14);
