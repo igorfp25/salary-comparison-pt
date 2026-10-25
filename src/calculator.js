@@ -1,5 +1,7 @@
 import { irsPt } from "./data/irs-pt-brackets.js";
+import { getMealTaxFreeDailyLimit } from "./data/mealAllowance-pt.js";
 
+// Locale-aware formatters keep presentation formatting out of the UI modules.
 const money = new Intl.NumberFormat("pt-PT", {
   style: "currency",
   currency: "EUR",
@@ -19,18 +21,20 @@ export function formatPercent(value) {
   return percent.format(value);
 }
 
+// Rounds monetary values to cents before they are presented or returned as totals.
 export function roundCurrency(value) {
   return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }
 
+// Calculates a complete annual compensation breakdown for one proposal.
 export function calculateProposal(input, config = {}) {
+  // Defaults provide a stable calculation baseline while allowing callers to override assumptions.
   const settings = {
     irsTable: irsPt,
     socialSecurityRate: 0.11,
     rnhEnabled: true,
     rnhLimit: 0.2,
     workingDaysPerMonth: 22,
-    mealAllowanceTaxFreeDailyLimit: 10.46,
     ...config,
   };
   const salaryMonths = number(input.salaryMonths, 14);
@@ -39,13 +43,15 @@ export function calculateProposal(input, config = {}) {
   const baseSalaryBasis = { monthly: baseSalary, annual: annualBaseSalary };
   const incomeItems = Array.isArray(input.incomeItems) ? input.incomeItems : [];
   const deductionItems = Array.isArray(input.deductionItems) ? input.deductionItems : [];
-  const mealTaxFreeDailyLimit = number(input.mealTaxFreeDailyLimit, settings.mealAllowanceTaxFreeDailyLimit);
+  // The statutory exemption limit depends solely on the selected payment method.
+  const mealTaxFreeDailyLimit = getMealTaxFreeDailyLimit(input.mealAllowancePaymentMethod);
 
   const annualTaxableForIrs = annualBaseSalary
     + incomeItems
       .filter((item) => item.subjectToIrs)
       .reduce((total, item) => total + annualIncomeAmount(item, baseSalaryBasis), 0)
     + annualTaxableMealAmount(input, mealTaxFreeDailyLimit, settings);
+  // IRS brackets are resolved from the monthly taxable amount.
   const monthlyDeductible = annualTaxableForIrs / salaryMonths;
   const irsRate = resolveIrsRate(monthlyDeductible, settings);
 
@@ -92,6 +98,7 @@ export function resolveIrsRate(monthlyTaxableIncome, settings) {
   const bracket = settings.irsTable.brackets.find((item) => monthlyTaxableIncome <= item.upperLimit);
   if (!bracket) return 0;
 
+  // The withholding-table abatement is encoded as factors to preserve its official formula.
   const abatement = bracket.abatements.a * bracket.abatements.b * (bracket.abatements.c - bracket.abatements.d * monthlyTaxableIncome);
   const calculatedRate = roundToFour((bracket.marginalRate * monthlyTaxableIncome - abatement) / monthlyTaxableIncome);
 
@@ -106,10 +113,12 @@ function incomeLine(label, annualGross, subjectToIrs, subjectToSs, irsRate, soci
   return { label, annualGross, annualTaxes, annualSocialSecurity, annualNet: annualGross + annualTaxes + annualSocialSecurity };
 }
 
+// Deductions reduce net income without changing gross income or statutory taxes in this model.
 function deductionLine(label, annualDeduction) {
   return { label, annualGross: 0, annualTaxes: 0, annualSocialSecurity: 0, annualNet: -annualDeduction };
 }
 
+// Splits the meal allowance into tax-free and taxable components using the configured daily limit.
 function mealAllowanceLines(input, taxFreeDailyLimit, settings, irsRate) {
   const dailyAllowance = number(input.mealAllowanceDaily);
   const payments = number(input.mealAllowanceMonths, 11);
@@ -118,17 +127,19 @@ function mealAllowanceLines(input, taxFreeDailyLimit, settings, irsRate) {
   const annualTaxFree = taxFreeDaily * settings.workingDaysPerMonth * payments;
   const annualTaxable = taxableDaily * settings.workingDaysPerMonth * payments;
   return {
-    taxFree: incomeLine("Subsídio de refeição isento", annualTaxFree, false, false, irsRate, settings.socialSecurityRate),
-    taxable: incomeLine("Subsídio de refeição sujeito", annualTaxable, true, true, irsRate, settings.socialSecurityRate),
+    taxFree: incomeLine("Subsídio de alimentação isento", annualTaxFree, false, false, irsRate, settings.socialSecurityRate),
+    taxable: incomeLine("Subsídio de alimentação sujeito", annualTaxable, true, true, irsRate, settings.socialSecurityRate),
   };
 }
 
+// Returns only the taxable meal component for inclusion in the IRS base.
 function annualTaxableMealAmount(input, taxFreeDailyLimit, settings) {
   return Math.max(number(input.mealAllowanceDaily) - taxFreeDailyLimit, 0)
     * settings.workingDaysPerMonth
     * number(input.mealAllowanceMonths, 11);
 }
 
+// Supports the calculation modes exposed by the additional-income form.
 function annualIncomeAmount(item, baseSalary) {
   const payments = number(item.payments, 1);
   if (item.calculationMode === "baseSalaryPercentage") return baseSalary.annual * normalizeRate(item.amount);
@@ -137,6 +148,7 @@ function annualIncomeAmount(item, baseSalary) {
   return number(item.amount) * payments;
 }
 
+// Supports the calculation modes exposed by the deduction form.
 function annualDeductionAmount(item, annualBaseSalary) {
   const payments = number(item.payments, 1);
   if (item.calculationMode === "baseSalaryPercentage") return annualBaseSalary * normalizeRate(item.amount);
@@ -146,6 +158,7 @@ function annualDeductionAmount(item, annualBaseSalary) {
   return number(item.amount) * payments;
 }
 
+// Uses a specific label when supplied, otherwise falls back to the selected income type.
 function incomeLabel(item) {
   return item.label || {
     annualBonus: "Bónus de desempenho anual",
@@ -156,6 +169,7 @@ function incomeLabel(item) {
   }[item.type] || "Rendimento adicional";
 }
 
+// Builds the accumulator used to combine individual compensation lines.
 function emptyTotals() {
   return { annualGross: 0, annualTaxes: 0, annualSocialSecurity: 0, annualNet: 0 };
 }
@@ -179,6 +193,7 @@ function roundLine(line) {
   };
 }
 
+// Converts form values safely and prevents invalid numeric input from propagating into calculations.
 function number(value, fallback = 0) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;

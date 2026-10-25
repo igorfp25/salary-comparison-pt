@@ -1,12 +1,24 @@
-import { INCOME_TYPES } from "../domain/proposal.js";
+import { INCOME_TYPES, MEAL_ALLOWANCE_PAYMENT_METHODS } from "../domain/proposal.js";
+import { getMealTaxFreeDailyLimit } from "../data/mealAllowance-pt.js";
 import { pt } from "../i18n/pt.js";
 
+// Formats monetary values using the active locale's currency conventions.
+const currency = new Intl.NumberFormat(pt.locale, {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 2,
+});
+
+// Creates consistently configured numeric inputs for the dynamic proposal form.
 const numberInput = (name, value, options = {}) => `
   <input name="${name}" type="number" min="${options.min ?? 0}" ${options.max ? `max="${options.max}"` : ""} step="${options.step ?? "0.01"}" value="${value}">
 `;
 
 const field = (label, input) => `<label>${label}${input}</label>`;
 
+const readOnlyField = (label, value) => field(label, `<output class="read-only-value">${value}</output>`);
+
+// Escapes user-entered labels before interpolating them into generated HTML.
 const escapeHtml = (value) => String(value)
   .replaceAll("&", "&amp;")
   .replaceAll("<", "&lt;")
@@ -15,17 +27,27 @@ const escapeHtml = (value) => String(value)
   .replaceAll("'", "&#039;");
 
 export function renderInputCard(form, proposal) {
+  // Re-rendering from state keeps the dynamic rows and their values in sync after every change.
+  const mealTaxFreeDailyLimit = getMealTaxFreeDailyLimit(proposal.mealAllowancePaymentMethod);
   form.innerHTML = `
     <section class="input-section">
       <div class="section-heading"><h2>${pt.sections.mandatory}</h2><span>Por proposta</span></div>
       <div class="mandatory-fields">
         ${mandatoryRow(pt.mandatoryGroups.proposal, field(pt.proposal.name, `<input name="name" type="text" autocomplete="off" value="${escapeHtml(proposal.name)}">`))}
-        ${mandatoryRow(pt.mandatoryGroups.baseSalary, `${field(pt.proposal.baseSalary, numberInput("baseSalary", proposal.baseSalary))}${field(pt.proposal.salaryMonths, numberInput("salaryMonths", proposal.salaryMonths, { min: 1, max: 14, step: 1 }))}`)}
-        ${mandatoryRow(pt.mandatoryGroups.mealAllowance, `${field(pt.proposal.mealAllowanceDaily, numberInput("mealAllowanceDaily", proposal.mealAllowanceDaily))}${field(pt.proposal.mealAllowanceMonths, numberInput("mealAllowanceMonths", proposal.mealAllowanceMonths, { min: 0, max: 12, step: 1 }))}${field(pt.proposal.mealTaxFreeDailyLimit, numberInput("mealTaxFreeDailyLimit", proposal.mealTaxFreeDailyLimit))}`)}
+        ${mandatoryRow(pt.mandatoryGroups.baseSalary, 
+          `${field(pt.proposal.baseSalary, numberInput("baseSalary", proposal.baseSalary))}
+          ${field(pt.proposal.salaryMonths, numberInput("salaryMonths", proposal.salaryMonths, { min: 1, max: 14, step: 1 }))}
+        `)}
+        ${mandatoryRow(pt.mandatoryGroups.mealAllowance, 
+          `${field(pt.proposal.mealAllowanceDaily, numberInput("mealAllowanceDaily", proposal.mealAllowanceDaily))}
+          ${field(pt.proposal.mealAllowanceMonths, numberInput("mealAllowanceMonths", proposal.mealAllowanceMonths, { min: 0, max: 12, step: 1 }))}
+          ${field(pt.proposal.mealAllowancePaymentMethod, select("mealAllowancePaymentMethod", proposal.mealAllowancePaymentMethod, MEAL_ALLOWANCE_PAYMENT_METHODS.map((mealAllowancePaymentMethod) => [mealAllowancePaymentMethod, pt.mealAllowancePaymentMethod[mealAllowancePaymentMethod]])))}
+          ${readOnlyField(pt.proposal.mealTaxFreeDailyLimit, formatMessage(pt.proposal.mealTaxFreeDailyLimitValue, { limit: currency.format(mealTaxFreeDailyLimit) }))}
+        `)}
       </div>
     </section>
     <section class="input-section">
-      <div class="section-heading"><div><h2>${pt.sections.income}</h2><p>Pagamentos além do salário base e subsídio de refeição.</p></div></div>
+      <div class="section-heading"><div><h2>${pt.sections.income}</h2><p>Pagamentos além do salário base e subsídio de alimentação.</p></div></div>
       <div id="income-items" class="item-list">
         ${proposal.incomeItems.map(renderIncomeItem).join("") || emptyState("Ainda não adicionou rendimentos adicionais.")}
       </div>
@@ -41,6 +63,7 @@ export function renderInputCard(form, proposal) {
   `;
 }
 
+// Renders one additional-income row and its applicable calculation controls.
 function renderIncomeItem(item) {
   const calculationFields = incomeCalculationFields(item);
 
@@ -63,6 +86,7 @@ function renderIncomeItem(item) {
   `;
 }
 
+// Shows only the fields needed by the selected income calculation mode.
 function incomeCalculationFields(item) {
   if (item.calculationMode === "baseSalaryPercentage") {
     return field(pt.income.annualRate, numberInput("amount", item.amount));
@@ -76,6 +100,7 @@ function incomeCalculationFields(item) {
   return field(pt.income.amount, numberInput("amount", item.amount));
 }
 
+// Renders one deduction row, including the extra fields required for family insurance.
 function renderDeductionItem(item) {
   const isFamily = item.calculationMode === "healthInsuranceFamily";
   const amountField = item.calculationMode === "baseSalaryPercentage"
@@ -99,6 +124,7 @@ function renderDeductionItem(item) {
   `;
 }
 
+// Builds a select control while retaining the item's currently selected value.
 function select(name, currentValue, options) {
   return `<select name="${name}">${options.map(([value, label]) => `<option value="${value}" ${value === currentValue ? "selected" : ""}>${label}</option>`).join("")}</select>`;
 }
@@ -109,4 +135,9 @@ function mandatoryRow(title, fields) {
 
 function emptyState(message) {
   return `<p class="empty-state">${message}</p>`;
+}
+
+// Replaces named placeholders so translated messages can control their word order.
+function formatMessage(template, values) {
+  return template.replace(/\{(\w+)\}/g, (placeholder, key) => values[key] ?? placeholder);
 }

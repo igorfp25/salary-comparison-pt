@@ -1,8 +1,10 @@
 import { formatMoney, formatPercent, roundCurrency } from "../calculator.js";
 import { pt } from "../i18n/pt.js";
 
+// Results use calendar months for averages, independently of the proposal's salary payment count.
 const MONTHS_PER_YEAR = 12;
 
+// Renders the high-level comparison cards for all calculated proposals.
 export function renderSummaryResults(container, results) {
   const copy = pt.results.summary;
   const best = findBestResult(results);
@@ -21,6 +23,7 @@ export function renderSummaryResults(container, results) {
   `;
 }
 
+// Renders the per-line annual and monthly calculation breakdown.
 export function renderDetailedResults(container, results) {
   const copy = pt.results.details;
 
@@ -55,6 +58,7 @@ export function renderDetailedResults(container, results) {
   `;
 }
 
+// Highlights the best annual-net result only when there is more than one proposal to compare.
 function renderSummaryCard(result, best, copy, proposalCount) {
   const isBest = proposalCount > 1 && result.id === best.id;
   const totalDiscounts = totalDiscountsFor(result);
@@ -144,6 +148,7 @@ function discountsFor(line) {
   return roundCurrency(line.annualGross - line.annualNet);
 }
 
+// Escapes proposal and line labels before inserting them into generated HTML.
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")

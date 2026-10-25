@@ -1,3 +1,4 @@
+// Lists the income types supported by the proposal editor.
 export const INCOME_TYPES = [
   "annualBonus",
   "carAllowance",
@@ -6,7 +7,14 @@ export const INCOME_TYPES = [
   "otherPayment",
 ];
 
-const incomeDefaults = {
+// Lists the possible payment methods for the meal allowance benefit. Different methods may have different tax rules.
+export const MEAL_ALLOWANCE_PAYMENT_METHODS = [
+  "card",
+  "cash",
+];
+
+// Provides domain defaults whenever the user creates or changes an income type.
+const INCOME_DEFAULTS = {
   annualBonus: { calculationMode: "baseSalaryPercentage", payments: 1, subjectToIrs: true, subjectToSs: true },
   carAllowance: { calculationMode: "fixed", payments: 12, subjectToIrs: true, subjectToSs: false },
   transportAllowance: { calculationMode: "fixed", payments: 12, subjectToIrs: false, subjectToSs: false },
@@ -15,6 +23,7 @@ const incomeDefaults = {
 };
 
 export function createProposal(name = "Nova proposta") {
+  // IDs are generated locally so proposals can be selected and cloned without persistence.
   return {
     id: crypto.randomUUID(),
     name,
@@ -22,14 +31,14 @@ export function createProposal(name = "Nova proposta") {
     salaryMonths: 14,
     mealAllowanceDaily: 0,
     mealAllowanceMonths: 11,
-    mealTaxFreeDailyLimit: 10.46,
+    mealAllowancePaymentMethod: MEAL_ALLOWANCE_PAYMENT_METHODS[0],
     incomeItems: [],
     deductionItems: [],
   };
 }
 
 export function createIncomeItem(type = "otherPayment") {
-  const defaults = incomeDefaults[type] ?? incomeDefaults.otherPayment;
+  const defaults = INCOME_DEFAULTS[type] ?? INCOME_DEFAULTS.otherPayment;
   return {
     id: crypto.randomUUID(),
     type,
@@ -53,6 +62,7 @@ export function createDeductionItem() {
 }
 
 export function cloneProposal(proposal, name) {
+  // Nested items receive new IDs to avoid collisions with the source proposal in the UI.
   return {
     ...proposal,
     id: crypto.randomUUID(),
