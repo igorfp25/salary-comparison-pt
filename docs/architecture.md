@@ -42,6 +42,7 @@ Responsabilidades:
 - permitir comparar múltiplas propostas;
 - mostrar cartões de resumo e uma tabela detalhada por rubrica;
 - exportar todos os cenários para ficheiros JSON criados localmente no navegador, com proteção opcional por palavra-passe.
+- importar ficheiros JSON locais, validar a sua estrutura e permitir substituir ou acrescentar propostas.
 
 ### Domínio
 

@@ -1,14 +1,15 @@
-// Identifies the portable file format independently from the application version.
-const FORMAT = "salary-comparison-pt";
-const VERSION = 1;
-// A deliberately expensive derivation protects password-based exports against guessing attacks.
-const PBKDF2_ITERATIONS = 600000;
+import {
+  ENCRYPTED_SIMULATION_FILE_FORMAT,
+  PBKDF2_ITERATIONS,
+  SIMULATION_FILE_FORMAT,
+  SIMULATION_FILE_VERSION,
+} from "../simulation/file-format.js";
 
 // Creates a versioned snapshot containing every proposal and the shared calculation settings.
 export function createSimulationExport(state) {
   return {
-    format: FORMAT,
-    version: VERSION,
+    format: SIMULATION_FILE_FORMAT,
+    version: SIMULATION_FILE_VERSION,
     exportedAt: new Date().toISOString(),
     simulation: {
       rnhEnabled: state.rnhEnabled,
@@ -57,8 +58,8 @@ export async function createEncryptedSimulationExport(simulationExport, password
 
   // Store only the parameters required for a future local decryption operation.
   return {
-    format: `${FORMAT}-encrypted`,
-    version: VERSION,
+    format: ENCRYPTED_SIMULATION_FILE_FORMAT,
+    version: SIMULATION_FILE_VERSION,
     encryption: {
       algorithm: "AES-GCM",
       kdf: "PBKDF2",

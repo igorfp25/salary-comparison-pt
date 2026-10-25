@@ -1,6 +1,7 @@
 import { calculateProposal } from "./calculator.js";
 import { cloneProposal, createDeductionItem, createIncomeItem, createProposal } from "./domain/proposal.js";
 import { initialiseSimulationExport } from "./features/export-simulation.js";
+import { initialiseSimulationImport } from "./features/import-simulation.js";
 import { pt } from "./i18n/pt.js";
 import { renderInputCard } from "./ui/input-card.js";
 import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
@@ -69,7 +70,13 @@ form.addEventListener("change", (event) => {
   if (target.tagName !== "SELECT") return;
 
   const row = target.closest("[data-kind]");
-  if (!row) return;
+  if (!row) {
+    // Top-level selects, including the meal-payment method, update the selected proposal directly.
+    updateProposalField(target);
+    renderForm();
+    renderResults();
+    return;
+  }
   // Changing the income type resets its type-specific defaults but keeps its identity and label.
   if (row.dataset.kind === "income" && target.name === "type") {
     replaceIncomeType(row.dataset.id, target.value);
@@ -192,3 +199,15 @@ function escapeHtml(value) {
 }
 
 render();
+
+// Attach the local file-import workflow after the initial interface has rendered.
+const loadSimulationButton = document.querySelector("#open-import");
+loadSimulationButton.textContent = pt.importSimulation.button;
+initialiseSimulationImport({
+  state,
+  openButton: loadSimulationButton,
+  fileInput: document.querySelector("#import-file"),
+  dialog: document.querySelector("#import-dialog"),
+  copy: pt.importSimulation,
+  render,
+});

@@ -38,6 +38,8 @@ select {
 .app-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
   max-width: 1440px;
   margin: 0 auto 16px;
 }
@@ -294,6 +296,18 @@ select {
   background: #fff;
 }
 
+.read-only-value {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: #f6f8f7;
+  font-weight: 700;
+}
+
 input:focus,
 select:focus,
 button:focus {
@@ -382,6 +396,12 @@ dialog h2 {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 4px;
+}
+
+.import-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .toggle-row {
@@ -644,5 +664,9 @@ dialog h2 {
   .results-heading {
     display: grid;
     align-items: start;
+  }
+
+  .import-actions {
+    grid-template-columns: 1fr;
   }
 }

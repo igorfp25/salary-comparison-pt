@@ -1,0 +1,9 @@
+{
+  "name": "salary-comparison-pt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/app.js && node --check src/calculator.js"
+  }
+}

@@ -6,6 +6,10 @@ Aplicação estática para comparar propostas de remuneração para trabalhador 
 
 Abra `index.html` no navegador. Como o projeto usa apenas HTML, CSS e JavaScript nativo, não é necessário instalar dependências.
 
+## Testes e validação
+
+É necessário ter Node.js 24 ou superior instalado para executar a suíte. Use `npm test` para executar os testes automatizados e `npm run check` para verificar a sintaxe dos pontos de entrada. O workflow em `.github/workflows/validate.yml` executa os testes em cada push e pull request; um workflow de publicação pode depender deste resultado antes de fazer o deploy.
+
 ## Publicação gratuita
 
 Este repositório foi pensado para GitHub Pages:
@@ -33,6 +37,8 @@ A aplicação não usa backend, contas, cookies, analytics, `localStorage` ou `s
 Os valores digitados ficam apenas no estado temporário da página, em memória, e desaparecem ao recarregar ou fechar o separador.
 
 Pode guardar todas as propostas visíveis num ficheiro JSON local. A aplicação mostra um aviso de dados sensíveis antes da exportação e pode proteger o ficheiro com uma palavra-passe que não é guardada.
+
+Também pode importar uma exportação JSON e escolher entre substituir a simulação atual (com confirmação) ou adicionar as propostas importadas. Os ficheiros protegidos pedem a palavra-passe usada na exportação.
 
 ## Nota fiscal
 

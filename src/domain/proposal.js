@@ -1,5 +1,3 @@
-import { mealAllowance } from "../data/mealAllowance-pt.js";
-
 // Lists the income types supported by the proposal editor.
 export const INCOME_TYPES = [
   "annualBonus",
@@ -9,8 +7,14 @@ export const INCOME_TYPES = [
   "otherPayment",
 ];
 
+// Lists the possible payment methods for the meal allowance benefit. Different methods may have different tax rules.
+export const MEAL_ALLOWANCE_PAYMENT_METHODS = [
+  "card",
+  "cash",
+];
+
 // Provides domain defaults whenever the user creates or changes an income type.
-const incomeDefaults = {
+const INCOME_DEFAULTS = {
   annualBonus: { calculationMode: "baseSalaryPercentage", payments: 1, subjectToIrs: true, subjectToSs: true },
   carAllowance: { calculationMode: "fixed", payments: 12, subjectToIrs: true, subjectToSs: false },
   transportAllowance: { calculationMode: "fixed", payments: 12, subjectToIrs: false, subjectToSs: false },
@@ -27,14 +31,14 @@ export function createProposal(name = "Nova proposta") {
     salaryMonths: 14,
     mealAllowanceDaily: 0,
     mealAllowanceMonths: 11,
-    mealTaxFreeDailyLimit: mealAllowance.taxFreeCardLimit,
+    mealAllowancePaymentMethod: MEAL_ALLOWANCE_PAYMENT_METHODS[0],
     incomeItems: [],
     deductionItems: [],
   };
 }
 
 export function createIncomeItem(type = "otherPayment") {
-  const defaults = incomeDefaults[type] ?? incomeDefaults.otherPayment;
+  const defaults = INCOME_DEFAULTS[type] ?? INCOME_DEFAULTS.otherPayment;
   return {
     id: crypto.randomUUID(),
     type,

@@ -1,5 +1,5 @@
 import { irsPt } from "./data/irs-pt-brackets.js";
-import { mealAllowance } from "./data/mealAllowance-pt.js";
+import { getMealTaxFreeDailyLimit } from "./data/mealAllowance-pt.js";
 
 // Locale-aware formatters keep presentation formatting out of the UI modules.
 const money = new Intl.NumberFormat("pt-PT", {
@@ -35,7 +35,6 @@ export function calculateProposal(input, config = {}) {
     rnhEnabled: true,
     rnhLimit: 0.2,
     workingDaysPerMonth: 22,
-    mealAllowanceTaxFreeDailyLimit: mealAllowance.taxFreeCardLimit,
     ...config,
   };
   const salaryMonths = number(input.salaryMonths, 14);
@@ -44,7 +43,8 @@ export function calculateProposal(input, config = {}) {
   const baseSalaryBasis = { monthly: baseSalary, annual: annualBaseSalary };
   const incomeItems = Array.isArray(input.incomeItems) ? input.incomeItems : [];
   const deductionItems = Array.isArray(input.deductionItems) ? input.deductionItems : [];
-  const mealTaxFreeDailyLimit = number(input.mealTaxFreeDailyLimit, settings.mealAllowanceTaxFreeDailyLimit);
+  // The statutory exemption limit depends solely on the selected payment method.
+  const mealTaxFreeDailyLimit = getMealTaxFreeDailyLimit(input.mealAllowancePaymentMethod);
 
   const annualTaxableForIrs = annualBaseSalary
     + incomeItems
@@ -127,8 +127,8 @@ function mealAllowanceLines(input, taxFreeDailyLimit, settings, irsRate) {
   const annualTaxFree = taxFreeDaily * settings.workingDaysPerMonth * payments;
   const annualTaxable = taxableDaily * settings.workingDaysPerMonth * payments;
   return {
-    taxFree: incomeLine("Subsídio de refeição isento", annualTaxFree, false, false, irsRate, settings.socialSecurityRate),
-    taxable: incomeLine("Subsídio de refeição sujeito", annualTaxable, true, true, irsRate, settings.socialSecurityRate),
+    taxFree: incomeLine("Subsídio de alimentação isento", annualTaxFree, false, false, irsRate, settings.socialSecurityRate),
+    taxable: incomeLine("Subsídio de alimentação sujeito", annualTaxable, true, true, irsRate, settings.socialSecurityRate),
   };
 }
 
