@@ -1,94 +1,132 @@
-# Arquitetura
+# Architecture
 
-## Objetivo
+## Purpose
 
-Criar um comparador de remuneração para Portugal que replique o fluxo principal do Excel:
+Salary Comparison PT is a static, browser-based calculator for comparing employment compensation proposals in Portugal. It lets a user model one or more proposals, including base salary, meal allowance, additional income, and deductions, then compare annual and average monthly net compensation.
 
-- introdução de uma ou mais propostas;
-- cálculo de salário bruto anual;
-- cálculo de IRS, Segurança Social e benefícios;
-- comparação de líquido mensal, líquido anual e pacote total.
+The application is intended as a transparent simulation tool. Its calculations are based on the versioned tax and meal-allowance data included in this repository and should be independently validated before being relied on for financial, tax, or employment decisions.
 
-## Decisão inicial
+## Deployment model
 
-Para GitHub Pages gratuito, a primeira versão usa uma aplicação 100% estática:
+The project is a dependency-free client-side web application:
 
-- sem backend;
-- sem base de dados;
-- sem cookies, analytics ou armazenamento local;
-- sem etapa obrigatória de build;
-- dados fiscais versionados em arquivos JavaScript/JSON;
-- cálculos executados no navegador.
+- `index.html` loads the application entry point as a native ES module.
+- `styles.css` provides the responsive presentation layer.
+- All calculation, import, export, encryption, and rendering work happens in the browser.
+- There is no backend, database, authentication, telemetry, analytics, cookie, `localStorage`, or `sessionStorage` usage.
+- The project has no build step or runtime dependency; it can be served as static files, including through GitHub Pages.
 
-Essa abordagem é suficiente para uma calculadora privada ou pública simples. Se no futuro houver contas de utilizador, histórico ou integração com fontes oficiais, o projeto pode evoluir para uma arquitetura com API.
+The application state is held only in memory. Reloading or closing the browser tab clears it unless the user has explicitly exported a local simulation file.
 
-## Privacidade por desenho
+## High-level component map
 
-As propostas digitadas pelo utilizador são mantidas apenas em memória no navegador. A aplicação não usa `localStorage`, `sessionStorage`, cookies, analytics ou chamadas de rede para transmitir os valores calculados.
+```text
+index.html
+    |
+    v
+src/app.js ---------------------------> src/calculator.js
+    |                                      |
+    |                                      +--> src/data/irs-pt-brackets.js
+    |                                      +--> src/data/mealAllowance-pt.js
+    |
+    +--> src/domain/proposal.js
+    +--> src/ui/*
+    +--> src/features/import-simulation.js --> src/import/simulation.js
+    |                                           |
+    |                                           +--> src/simulation/file-format.js
+    +--> src/features/export-simulation.js --> src/export/simulation.js
+                                                |
+                                                +--> src/simulation/file-format.js
+```
 
-Qualquer funcionalidade futura de partilha, exportação em nuvem, analytics ou persistência deve ser tratada como mudança de arquitetura e documentada antes de ser implementada.
+`src/app.js` is the composition root. It owns the in-memory UI state, connects DOM events to domain factories and feature modules, recalculates every proposal after a state change, and re-renders the relevant UI regions.
 
-## Camadas
+## Application state and proposal domain
 
-### Interface
+`src/domain/proposal.js` defines the reusable proposal model and factory functions:
 
-`index.html`, `styles.css`, `src/app.js`, `src/ui/input-card.js` e
-`src/ui/output-cards.js`.
+- A proposal contains an ID, name, base salary, number of salary payments, meal allowance settings, additional income items, and deduction items.
+- Additional income supports the `annualBonus`, `carAllowance`, `transportAllowance`, `remoteWorkAllowance`, and `otherPayment` types.
+- Income and deductions support fixed amounts and the calculation modes exposed by the editor. Each income item also records whether it is subject to IRS and Social Security.
+- Browser-generated UUIDs identify proposals and nested items. Cloning creates new IDs for the proposal and all nested items, preventing collisions in the UI.
 
-Responsabilidades:
+The initial in-memory state contains two examples: `Atual` and `Nova oferta`. Shared calculation assumptions currently include the RNH cap toggle and limit, plus the 11% employee Social Security rate. The UI treats that Social Security rate as statutory and resets it to 11% when rendering, including after an imported replacement.
 
-- capturar inputs;
-- apresentar os campos obrigatórios e linhas dinâmicas de rendimentos/descontos;
-- permitir comparar múltiplas propostas;
-- mostrar cartões de resumo e uma tabela detalhada por rubrica;
-- exportar todos os cenários para ficheiros JSON criados localmente no navegador, com proteção opcional por palavra-passe.
-- importar ficheiros JSON locais, validar a sua estrutura e permitir substituir ou acrescentar propostas.
+## Calculation engine
 
-### Domínio
+`src/calculator.js` is a pure calculation module apart from its locale formatters. `calculateProposal` accepts a proposal and optional configuration and returns a structured annual result containing totals, the applicable IRS rate, a monthly net average, and the individual calculation lines used by the detailed results table.
 
-`src/calculator.js` e `src/domain/proposal.js`.
+The engine:
 
-Responsabilidades:
+- calculates annual base salary from the monthly amount and number of salary payments;
+- resolves annual amounts for additional income and deductions;
+- splits meal allowance into tax-free and taxable portions using the chosen cash/card daily limit, working-day assumption, and payment count;
+- determines the IRS withholding rate from monthly taxable income and the configured bracket table;
+- optionally caps the calculated IRS rate using the RNH limit;
+- applies the configured employee Social Security rate to applicable compensation lines; and
+- rounds returned monetary totals and lines to cents.
 
-- calcular remuneração anual;
-- calcular base tributável mensal;
-- selecionar faixa de IRS;
-- aplicar limite RNH quando configurado;
-- calcular Segurança Social;
-- calcular subsídios, bónus e benefícios;
-- devolver resultado estruturado e testável.
+The current default assumptions are 22 working days per month, 11% employee Social Security, and an enabled 20% RNH cap. Callers may override these settings when using the calculation module directly.
 
-`src/domain/proposal.js` contém os modelos por defeito e as fábricas de propostas,
-rendimentos e descontos. A interface não precisa conhecer as regras de cada tipo
-de rendimento.
+## Versioned regulatory data
 
-### Texto da interface
+Regulatory inputs are isolated from the UI and engine logic:
 
-`src/i18n/pt.js`.
+- `src/data/irs-pt-brackets.js` contains the 2026 Portuguese Category A withholding brackets for mainland Portugal, married with one income and no dependants.
+- `src/data/mealAllowance-pt.js` contains 2026 meal-allowance exemption limits: EUR 6.15 per day when paid in cash and EUR 10.46 per day when paid by card.
 
-Os textos introduzidos nos cartões de input e de output são agrupados por
-contexto e em português. Uma futura tradução pode repetir a mesma estrutura
-(`en.js`, por exemplo) e ser selecionada na camada de interface, sem alterar
-os cálculos.
+These values require periodic review. Updating a tax year should preserve the source and effective-date metadata and be accompanied by calculation tests.
 
-### Dados
+## User interface
 
-`src/data/irs-pt-brackets.js`.
+UI modules generate the interactive browser interface while keeping business rules outside the rendering code:
 
-Responsabilidades:
+- `src/ui/input-card.js` renders the selected proposal editor and its dynamic income and deduction rows.
+- `src/ui/output-cards.js` renders summary comparison cards and detailed line-item tables. It also manages accessible show/hide controls for detailed lines.
+- `src/ui/collapsible-panel.js` manages the accessible collapsed state of the configuration panel.
+- `src/ui/import-dialog.js` and `src/ui/export-dialog.js` render and manage the import/export dialogs.
+- `src/i18n/pt.js` centralizes current Portuguese UI copy for the modular UI components and feature dialogs.
 
-- isolar tabelas fiscais;
-- permitir atualização anual sem tocar na interface;
-- preservar metadados de origem/ano.
+The interface escapes user-provided proposal names, labels, filenames, and messages before placing them in generated HTML.
 
+## Local import and export
 
+Simulation portability is implemented as separate feature, transport, and file-contract layers:
 
-## Evolução recomendada
+- `src/features/export-simulation.js` connects the export dialog to the current state and produces a fresh snapshot at download time.
+- `src/export/simulation.js` creates plain JSON exports and optional encrypted exports, then downloads them through a temporary browser object URL.
+- `src/features/import-simulation.js` coordinates local file selection, password/action prompts, state replacement or addition, and error presentation.
+- `src/import/simulation.js` parses, decrypts when needed, and validates untrusted file contents before they can update application state.
+- `src/simulation/file-format.js` defines the shared format identifiers, version, and password-derivation iteration count.
 
-1. Validar os cálculos contra 3 a 5 cenários do Excel.
-2. Atualizar tabelas de IRS para o ano vigente com fonte oficial.
-3. Adicionar testes automatizados para o motor de cálculo.
-4. Adicionar importação de simulações JSON e exportação CSV/PDF.
-5. Adicionar modo "comparar proposta atual vs nova proposta".
-6. Validar com um contabilista o tratamento fiscal de cada tipo de rendimento e
-   introduzir regras específicas, quando necessário.
+Plain files use the versioned `salary-comparison-pt` format (currently version 1). Encrypted files use `salary-comparison-pt-encrypted`. Encryption and decryption occur locally with Web Crypto: AES-256-GCM, a random 16-byte salt, a random 12-byte IV, and PBKDF2-SHA-256 with 600,000 iterations. Passwords are never written into export files or persisted by the application.
+
+Imports are capped at 5 MiB and undergo structural, type, range, collection-size, and identifier-uniqueness validation. The import layer accepts older proposal exports that omit the meal-allowance payment method and defaults them to card payment. Users may either replace the current state after confirmation or add imported proposals as fresh clones while keeping the current shared assumptions.
+
+## Privacy and security boundaries
+
+The application keeps entered data in browser memory and does not send it to a server. Exported files may contain sensitive salary information, so the export dialog warns users and offers password protection.
+
+Import files are untrusted input. They are validated before use, and encrypted imports are rejected when their cryptographic metadata, password, or ciphertext cannot be verified. The validation limits proposal and nested-item counts to protect the browser from excessively large structured data.
+
+The technical privacy policy is maintained in `docs/privacy.md`.
+
+## Quality controls
+
+The project uses Node's built-in test runner and no test framework dependency. Tests cover:
+
+- calculator totals, tax-rate resolution, RNH capping, and rounding;
+- proposal creation and cloning;
+- plain/encrypted simulation export and import validation; and
+- output-card and collapsible-panel behavior using lightweight DOM doubles.
+
+Run `npm test` to execute the suite and `npm run check` to syntax-check the application and calculator entry points. `.github/workflows/validate.yml` runs `npm test` on pushes and pull requests with Node.js 24.
+
+## Extension guidelines
+
+Future changes should preserve the existing boundaries:
+
+1. Add or revise tax rules and statutory values in `src/data/` and cover them with calculator tests.
+2. Keep compensation rules in `src/calculator.js` and proposal defaults or shapes in `src/domain/proposal.js`, rather than embedding them in UI modules.
+3. Treat import/export format changes as versioned compatibility changes and extend the validation logic before accepting new fields.
+4. Treat any server persistence, sharing feature, analytics integration, or external data source as an architectural and privacy change requiring documentation and explicit user consent design.
