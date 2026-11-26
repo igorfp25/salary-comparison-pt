@@ -11,8 +11,8 @@ import { initialiseDetailedResultToggles, renderDetailedResults, renderSummaryRe
 const SOCIAL_SECURITY_RATE = 0.11;
 
 // Initialise the two comparison examples shown when the application first loads.
-const currentProposal = { ...createProposal("Atual"), baseSalary: 1500 };
-const newProposal = { ...createProposal("Nova oferta"), baseSalary: 2000 };
+const currentProposal = { ...createProposal("(exemplo) Atual"), baseSalary: 1500 };
+const newProposal = { ...createProposal("(exemplo) Nova oferta"), baseSalary: 2000 };
 
 // The complete application state remains in memory and is never persisted automatically.
 const state = {

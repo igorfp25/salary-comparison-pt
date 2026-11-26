@@ -50,7 +50,7 @@ src/app.js ---------------------------> src/calculator.js
 - Income and deductions support fixed amounts and the calculation modes exposed by the editor. Each income item also records whether it is subject to IRS and Social Security.
 - Browser-generated UUIDs identify proposals and nested items. Cloning creates new IDs for the proposal and all nested items, preventing collisions in the UI.
 
-The initial in-memory state contains two examples: `Atual` and `Nova oferta`. Shared calculation assumptions currently include the RNH cap toggle and limit, plus the 11% employee Social Security rate. The UI treats that Social Security rate as statutory and resets it to 11% when rendering, including after an imported replacement.
+The initial in-memory state contains two examples: `(exemplo) Atual` and `(exemplo) Nova oferta`. Shared calculation assumptions currently include the RNH cap toggle and limit, plus the 11% employee Social Security rate. The UI treats that Social Security rate as statutory and resets it to 11% when rendering, including after an imported replacement.
 
 ## Calculation engine
 
