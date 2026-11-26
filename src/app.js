@@ -3,8 +3,12 @@ import { cloneProposal, createDeductionItem, createIncomeItem, createProposal } 
 import { initialiseSimulationExport } from "./features/export-simulation.js";
 import { initialiseSimulationImport } from "./features/import-simulation.js";
 import { pt } from "./i18n/pt.js";
+import { initialiseCollapsiblePanel } from "./ui/collapsible-panel.js";
 import { renderInputCard } from "./ui/input-card.js";
 import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
+
+// The employee contribution is a statutory application setting, not a user-editable assumption.
+const SOCIAL_SECURITY_RATE = 0.11;
 
 // Initialise the two comparison examples shown when the application first loads.
 const currentProposal = { ...createProposal("Atual"), baseSalary: 1500 };
@@ -14,7 +18,7 @@ const newProposal = { ...createProposal("Nova oferta"), baseSalary: 2000 };
 const state = {
   rnhEnabled: true,
   rnhLimit: 0.2,
-  socialSecurityRate: 0.11,
+  socialSecurityRate: SOCIAL_SECURITY_RATE,
   proposals: [currentProposal, newProposal],
   selectedProposalId: currentProposal.id,
 };
@@ -26,6 +30,14 @@ const detailedResults = document.querySelector("#detailed-results");
 const rnhToggle = document.querySelector("#rnh-enabled");
 const rnhLimit = document.querySelector("#rnh-limit");
 const ssRate = document.querySelector("#ss-rate");
+
+initialiseCollapsiblePanel({
+  panel: document.querySelector("#configuration-panel"),
+  content: document.querySelector("#configuration-content"),
+  toggle: document.querySelector("#toggle-configuration"),
+  expandedLabel: "Ocultar",
+  collapsedLabel: "Mostrar configuração",
+});
 
 // The export feature receives its copy and current state as dependencies.
 const saveSimulationButton = document.querySelector("#open-export");
@@ -123,11 +135,6 @@ rnhLimit.addEventListener("input", () => {
   renderResults();
 });
 
-ssRate.addEventListener("input", () => {
-  state.socialSecurityRate = Number(ssRate.value) / 100;
-  renderResults();
-});
-
 function selectedProposal() {
   return state.proposals.find((proposal) => proposal.id === state.selectedProposalId);
 }
@@ -159,6 +166,8 @@ function replaceIncomeType(itemId, type) {
 
 // Keeps all UI regions derived from the same in-memory state.
 function render() {
+  // Imports may contain historic rates; the current interface always applies the statutory rate.
+  state.socialSecurityRate = SOCIAL_SECURITY_RATE;
   renderSelect();
   renderForm();
   renderResults();
@@ -175,7 +184,7 @@ function renderForm() {
   renderInputCard(form, selectedProposal());
   rnhToggle.checked = state.rnhEnabled;
   rnhLimit.value = state.rnhLimit * 100;
-  ssRate.value = state.socialSecurityRate * 100;
+  ssRate.textContent = `${SOCIAL_SECURITY_RATE * 100}%`;
 }
 
 function renderResults() {

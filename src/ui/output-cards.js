@@ -61,7 +61,6 @@ export function renderDetailedResults(container, results) {
 // Highlights the best annual-net result only when there is more than one proposal to compare.
 function renderSummaryCard(result, best, copy, proposalCount) {
   const isBest = proposalCount > 1 && result.id === best.id;
-  const totalDiscounts = totalDiscountsFor(result);
 
   return `
     <article class="summary-card ${isBest ? "is-best" : ""}">
@@ -74,10 +73,9 @@ function renderSummaryCard(result, best, copy, proposalCount) {
         <strong>${formatMoney(result.annualNet)}</strong>
       </div>
       <dl class="summary-metrics">
-        ${summaryMetric(copy.averageMonthlyNet, formatMoney(result.averageMonthlyNet))}
         ${summaryMetric(copy.annualGross, formatMoney(result.annualGross))}
+        ${summaryMetric(copy.averageMonthlyNet, formatMoney(result.averageMonthlyNet))}
         ${summaryMetric(copy.irsRate, formatPercent(result.irsRate))}
-        ${summaryMetric(copy.totalDiscounts, formatMoney(totalDiscounts))}
       </dl>
     </article>
   `;
