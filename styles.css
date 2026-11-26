@@ -35,18 +35,41 @@ select {
   padding: 24px;
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1440px;
+  margin: 0 auto 16px;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-brand-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+}
+
 .app-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
-  max-width: 1440px;
-  margin: 0 auto 16px;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(400px, 580px) minmax(0, 1fr);
   gap: 20px;
   max-width: 1440px;
   margin: 0 auto;
@@ -60,13 +83,27 @@ select {
 }
 
 .controls-panel {
-  padding: 22px;
+  overflow: hidden;
 }
 
 .panel-header {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-header h2 {
+  margin-bottom: 4px;
+}
+
+.panel-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
 .eyebrow {
@@ -101,7 +138,7 @@ h3 {
 }
 
 .privacy-note {
-  margin: -4px 0 18px;
+  margin: 18px 22px;
   padding: 12px;
   border-left: 4px solid var(--accent);
   background: #f7fbfa;
@@ -113,22 +150,22 @@ h3 {
 .toolbar,
 .settings-grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto;
   gap: 10px;
   align-items: end;
-  margin-bottom: 18px;
 }
 
 .settings-grid {
   grid-template-columns: 1fr 1fr 1fr;
-  margin: 20px 0 0;
-  padding-top: 18px;
+  margin: 20px 22px 0;
+  padding: 18px 0 22px;
   border-top: 1px solid var(--line);
 }
 
 .proposal-form {
   display: grid;
   gap: 18px;
+  padding: 0 22px;
 }
 
 .input-section {
@@ -300,11 +337,24 @@ select {
   display: flex;
   align-items: center;
   min-height: 40px;
-  padding: 0 10px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
+  padding: 0;
   color: var(--ink);
-  background: #f6f8f7;
+  font-weight: 700;
+}
+
+.fixed-setting {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.fixed-setting output {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -534,7 +584,7 @@ dialog h2 {
 
 .summary-metrics {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   margin: 0;
   border-top: 1px solid var(--line);
@@ -546,16 +596,10 @@ dialog h2 {
   padding: 10px 10px 0 0;
 }
 
-.summary-metrics div:nth-child(even) {
+.summary-metrics div + div {
   padding-right: 0;
   padding-left: 10px;
   border-left: 1px solid var(--line);
-}
-
-.summary-metrics div:nth-child(n + 3) {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
 }
 
 .summary-metrics dt {
@@ -584,13 +628,14 @@ dialog h2 {
 
 .details-table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 900px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .details-table th,
 .details-table td {
-  padding: 12px 10px;
+  padding: 12px 8px;
   border-bottom: 1px solid var(--line);
   text-align: right;
   white-space: nowrap;
@@ -598,6 +643,7 @@ dialog h2 {
 
 .details-table th:first-child,
 .details-table td:first-child {
+  width: 20%;
   text-align: left;
 }
 
@@ -605,6 +651,7 @@ dialog h2 {
   color: var(--muted);
   font-size: 0.78rem;
   text-transform: uppercase;
+  white-space: normal;
 }
 
 .details-table caption {
@@ -625,12 +672,34 @@ dialog h2 {
   text-align: left;
 }
 
+.proposal-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .proposal-group-row span {
   margin-right: 8px;
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.details-toggle {
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+}
+
+.details-toggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .details-total-row th,
@@ -642,14 +711,24 @@ dialog h2 {
 }
 
 @media (max-width: 980px) {
-  .workspace {
-    grid-template-columns: 1fr;
+  .panel-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    width: 100%;
   }
 }
 
 @media (max-width: 680px) {
   .app-shell {
     padding: 12px;
+  }
+
+  .app-header {
+    align-items: start;
+    flex-direction: column;
   }
 
   .mandatory-fields,
@@ -659,6 +738,30 @@ dialog h2 {
   .toolbar,
   .settings-grid {
     grid-template-columns: 1fr;
+  }
+
+  .summary-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-metrics div + div {
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .panel-header,
+  .proposal-form {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .privacy-note,
+  .settings-grid {
+    margin-right: 14px;
+    margin-left: 14px;
   }
 
   .results-heading {

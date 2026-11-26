@@ -49,19 +49,32 @@ export function renderDetailedResults(container, results) {
               <th scope="col">${copy.annualNet}</th>
             </tr>
           </thead>
-          <tbody>
-            ${results.map((result) => renderProposalDetails(result, copy)).join("")}
-          </tbody>
+          ${results.map((result) => renderProposalDetails(result, copy)).join("")}
         </table>
       </div>
     </article>
   `;
 }
 
+// Handles detail toggles through one delegated listener that survives result re-renders.
+export function initialiseDetailedResultToggles(container) {
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action='toggle-details']");
+    if (!button) return;
+
+    const proposalDetails = button.closest(".proposal-details");
+    const isExpanded = button.getAttribute("aria-expanded") === "true";
+    proposalDetails.querySelectorAll(".detail-line").forEach((line) => {
+      line.hidden = isExpanded;
+    });
+    button.setAttribute("aria-expanded", String(!isExpanded));
+    button.textContent = isExpanded ? button.dataset.showLabel : button.dataset.hideLabel;
+  });
+}
+
 // Highlights the best annual-net result only when there is more than one proposal to compare.
 function renderSummaryCard(result, best, copy, proposalCount) {
   const isBest = proposalCount > 1 && result.id === best.id;
-  const totalDiscounts = totalDiscountsFor(result);
 
   return `
     <article class="summary-card ${isBest ? "is-best" : ""}">
@@ -74,10 +87,9 @@ function renderSummaryCard(result, best, copy, proposalCount) {
         <strong>${formatMoney(result.annualNet)}</strong>
       </div>
       <dl class="summary-metrics">
-        ${summaryMetric(copy.averageMonthlyNet, formatMoney(result.averageMonthlyNet))}
         ${summaryMetric(copy.annualGross, formatMoney(result.annualGross))}
+        ${summaryMetric(copy.averageMonthlyNet, formatMoney(result.averageMonthlyNet))}
         ${summaryMetric(copy.irsRate, formatPercent(result.irsRate))}
-        ${summaryMetric(copy.totalDiscounts, formatMoney(totalDiscounts))}
       </dl>
     </article>
   `;
@@ -94,18 +106,25 @@ function bestResultNotice(best, copy) {
 
 function renderProposalDetails(result, copy) {
   return `
-    <tr class="proposal-group-row">
-      <th colspan="7" scope="rowgroup"><span>${copy.proposal}</span>${escapeHtml(result.name)}</th>
-    </tr>
-    ${result.lines.map((line) => renderDetailLine(line)).join("")}
-    ${renderTotalRow(result, copy)}
+    <tbody class="proposal-details">
+      <tr class="proposal-group-row">
+        <th colspan="7" scope="rowgroup">
+          <div class="proposal-group-heading">
+            <div><span>${copy.proposal}</span>${escapeHtml(result.name)}</div>
+            <button type="button" class="details-toggle" data-action="toggle-details" data-show-label="${copy.showLines}" data-hide-label="${copy.hideLines}" aria-expanded="true">${copy.hideLines}</button>
+          </div>
+        </th>
+      </tr>
+      ${result.lines.map((line) => renderDetailLine(line)).join("")}
+      ${renderTotalRow(result, copy)}
+    </tbody>
   `;
 }
 
 function renderDetailLine(line) {
   const annualDiscounts = discountsFor(line);
   return `
-    <tr>
+    <tr class="detail-line">
       <th scope="row">${escapeHtml(line.label)}</th>
       <td>${formatMoney(line.annualGross / MONTHS_PER_YEAR)}</td>
       <td>${formatMoney(line.annualGross)}</td>
