@@ -123,7 +123,7 @@ export const pt = {
       annualGross: "Bruto anual",
       irsRate: "IRS aplicado",
       totalDiscounts: "Descontos totais",
-      bestBadge: "Melhor resultado",
+      bestBadge: "Melhor proposta",
     },
     details: {
       title: "Detalhe por rubrica",
@@ -138,6 +138,8 @@ export const pt = {
       averageMonthlyNet: "Líquido médio mensal",
       annualNet: "Líquido anual",
       total: "Total",
+      showLines: "Mostrar rubricas",
+      hideLines: "Ocultar rubricas",
     },
   },
 };

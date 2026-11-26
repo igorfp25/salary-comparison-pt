@@ -5,7 +5,7 @@ import { initialiseSimulationImport } from "./features/import-simulation.js";
 import { pt } from "./i18n/pt.js";
 import { initialiseCollapsiblePanel } from "./ui/collapsible-panel.js";
 import { renderInputCard } from "./ui/input-card.js";
-import { renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
+import { initialiseDetailedResultToggles, renderDetailedResults, renderSummaryResults } from "./ui/output-cards.js";
 
 // The employee contribution is a statutory application setting, not a user-editable assumption.
 const SOCIAL_SECURITY_RATE = 0.11;
@@ -30,6 +30,8 @@ const detailedResults = document.querySelector("#detailed-results");
 const rnhToggle = document.querySelector("#rnh-enabled");
 const rnhLimit = document.querySelector("#rnh-limit");
 const ssRate = document.querySelector("#ss-rate");
+
+initialiseDetailedResultToggles(detailedResults);
 
 initialiseCollapsiblePanel({
   panel: document.querySelector("#configuration-panel"),

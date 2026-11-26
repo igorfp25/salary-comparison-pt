@@ -672,12 +672,34 @@ dialog h2 {
   text-align: left;
 }
 
+.proposal-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .proposal-group-row span {
   margin-right: 8px;
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.details-toggle {
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--accent-strong);
+  font-size: 0.76rem;
+}
+
+.details-toggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .details-total-row th,
